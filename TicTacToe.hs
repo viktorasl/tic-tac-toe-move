@@ -49,7 +49,7 @@ move :: String -> Maybe BoardField
 move boardBencode = Just $ putXInEmptyField $ parseBoard boardBencode
 
 putXInEmptyField :: Board -> BoardField
-putXInEmptyField board = head board
+putXInEmptyField board = findEmptyField' board (0, 0, 'x')
 
 -- Board parsing
 
