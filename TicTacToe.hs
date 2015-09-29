@@ -6,50 +6,13 @@ import Data.List
 type BoardField = (Int, Int, Char)
 type Board = [BoardField]
 
-message :: String
-
---l
----d
-----1:v
-----1:x
-----1:x
-----i1e
-----1:y
-----i1e
----e
----d
-----1:v
-----1:o
-----1:x
-----i0e
-----1:y
-----i2e
----e
----d
-----1:v
-----1:x
-----1:x
-----i2e
-----1:y
-----i2e
----e
----d
-----1:v
-----1:o
-----1:x
-----i0e
-----1:y
-----i1e
----e
---e
-
-message = "ld1:v1:x1:xi1e1:yi1eed1:v1:o1:xi0e1:yi2eed1:v1:x1:xi2e1:yi2eed1:v1:o1:xi0e1:yi1eee"
+defaultField = (0, 0, 'o')
 
 move :: String -> Maybe BoardField
 move boardBencode = Just $ putXInEmptyField $ parseBoard boardBencode
 
 putXInEmptyField :: Board -> BoardField
-putXInEmptyField board = findEmptyField' board (0, 0, 'x')
+putXInEmptyField board = findEmptyField' board defaultField
 
 -- Board parsing
 
@@ -60,7 +23,7 @@ parseBoardFields' :: String -> Board -> Board
 parseBoardFields' ('e' : dict) board = board
 parseBoardFields' ('d' : dict) board =
     let
-    (field, rest) = parseBoardField' dict (0, 0, 'x')
+    (field, rest) = parseBoardField' dict defaultField
     in parseBoardFields' rest (field : board)
 
 parseChar :: String -> Char
