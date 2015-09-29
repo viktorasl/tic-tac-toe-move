@@ -48,6 +48,11 @@ message = "ld1:v1:x1:xi1e1:yi1eed1:v1:o1:xi0e1:yi2eed1:v1:x1:xi2e1:yi2eed1:v1:o1
 move :: String -> Maybe BoardField
 move boardBencode = Just $ putXInEmptyField $ parseBoard boardBencode
 
+putXInEmptyField :: Board -> BoardField
+putXInEmptyField board = head board
+
+-- Board parsing
+
 parseBoard :: String -> Board
 parseBoard ('l' : list) = parseBoardFields' list []
 
@@ -80,21 +85,22 @@ parseBoardField' str field =
 parseBoardFieldKey :: String -> (Char, String)
 parseBoardFieldKey str = (head $ drop 2 str, drop 3 str)
 
-putXInEmptyField :: Board -> BoardField
-putXInEmptyField board = head board
+-- Empty field lookup
 
 coordsEqual :: BoardField -> BoardField -> Bool
 coordsEqual (x1, y1, _) (x2, y2, _) = if (x1 == x2 && y1 == y2) then True else False 
 
 findEmptyField' :: Board -> BoardField -> BoardField
-findEmptyField' board (x, y, v) =
+findEmptyField' board field = case indexOfField board field of
+    Just _ -> findEmptyField' board $ nextField field
+    Nothing -> field    
+
+nextField :: BoardField -> BoardField
+nextField (x, y, v) =
     let
-    idx = indexOfField board (x, y, v)
-    nextX = if (y == 2) then (x + 1) else x
-    nextY = if (y == 2) then 0 else (y + 1)
-    in case idx of
-        Just i -> findEmptyField' board (nextX, nextY, v)
-        Nothing -> (x, y, v)
+        nextX = if (y == 2) then (x + 1) else x
+        nextY = if (y == 2) then 0 else (y + 1)
+    in (nextX, nextY, v)
 
 indexOfField :: Board -> BoardField -> Maybe Int
 indexOfField board field = findIndex (\field' -> coordsEqual field field') board
