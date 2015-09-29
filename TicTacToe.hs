@@ -1,6 +1,7 @@
 module TicTacToe
 where
 import Data.Char
+import Data.List
 
 type BoardField = (Int, Int, Char)
 type Board = [BoardField]
@@ -44,8 +45,8 @@ message :: String
 
 message = "ld1:v1:x1:xi1e1:yi1eed1:v1:o1:xi0e1:yi2eed1:v1:x1:xi2e1:yi2eed1:v1:o1:xi0e1:yi1eee"
 
---move :: String -> Maybe BoardField
---move boardBencode = Just $ putXInEmptyField $ parseBoard boardBencode
+move :: String -> Maybe BoardField
+move boardBencode = Just $ putXInEmptyField $ parseBoard boardBencode
 
 parseBoard :: String -> Board
 parseBoard ('l' : list) = parseBoardFields' list []
@@ -79,5 +80,21 @@ parseBoardField' str field =
 parseBoardFieldKey :: String -> (Char, String)
 parseBoardFieldKey str = (head $ drop 2 str, drop 3 str)
 
---putXInEmptyField :: Board -> BoardField
---putXInEmptyField board = head board
+putXInEmptyField :: Board -> BoardField
+putXInEmptyField board = head board
+
+coordsEqual :: BoardField -> BoardField -> Bool
+coordsEqual (x1, y1, _) (x2, y2, _) = if (x1 == x2 && y1 == y2) then True else False 
+
+findEmptyField' :: Board -> BoardField -> BoardField
+findEmptyField' board (x, y, v) =
+    let
+    idx = indexOfField board (x, y, v)
+    nextX = if (y == 2) then (x + 1) else x
+    nextY = if (y == 2) then 0 else (y + 1)
+    in case idx of
+        Just i -> findEmptyField' board (nextX, nextY, v)
+        Nothing -> (x, y, v)
+
+indexOfField :: Board -> BoardField -> Maybe Int
+indexOfField board field = findIndex (\field' -> coordsEqual field field') board
